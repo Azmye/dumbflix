@@ -12,3 +12,15 @@ type Episode struct {
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 }
+
+type EpisodeResponse struct {
+	ID        int    `json:"id,"`
+	Title     string `json:"title"`
+	Thumbnail string `json:"thumbnail"`
+	VideoLink string `json:"video_link"`
+	Movie     Movie  `json:"movie"`
+}
+
+func (EpisodeResponse) TableName() string {
+	return "EpisodeResponses"
+}
