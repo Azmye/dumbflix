@@ -1,6 +1,10 @@
 package repositories
 
-import "dumbflix/models"
+import (
+	"dumbflix/models"
+
+	"gorm.io/gorm"
+)
 
 type MovieRepository interface {
 	FindMovies() ([]models.Movie, error)
@@ -8,6 +12,10 @@ type MovieRepository interface {
 	CreateMovie(movie models.Movie) (models.Movie, error)
 	UpdateMovie(movie models.Movie) (models.Movie, error)
 	DeleteMovie(movie models.Movie, ID int) (models.Movie, error)
+}
+
+func RepositoryMovie(db *gorm.DB) *repository {
+	return &repository{db}
 }
 
 func (r *repository) FindMovies() ([]models.Movie, error) {

@@ -1,6 +1,10 @@
 package repositories
 
-import "dumbflix/models"
+import (
+	"dumbflix/models"
+
+	"gorm.io/gorm"
+)
 
 type CategoryRepository interface {
 	FindCategory() ([]models.Category, error)
@@ -10,9 +14,21 @@ type CategoryRepository interface {
 	DeleteCategory(Category models.Category, ID int) (models.Category, error)
 }
 
+func RepositoryCategory(db *gorm.DB) *repository {
+	return &repository{db}
+}
+
 func (r *repository) FindCategory() ([]models.Category, error) {
 	var category []models.Category
 	err := r.db.Find(&category).Error
+
+	return category, err
+}
+
+func (r *repository) GetCategory(ID int) (models.Category, error) {
+	var category models.Category
+
+	err := r.db.First(&category, ID).Error
 
 	return category, err
 }
