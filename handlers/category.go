@@ -110,8 +110,9 @@ func (h *handlerCategory) DeleteCategory(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponseCategory(data)})
 }
 
-func convertResponseCategory(u models.Category) models.Category {
-	return models.Category{
+func convertResponseCategory(u models.Category) models.CategoryResponse {
+	return models.CategoryResponse{
+		ID:   u.ID,
 		Name: u.Name,
 	}
 }
