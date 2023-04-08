@@ -20,6 +20,29 @@ func HandlerEpisode(EpisodeRepository repositories.EpisodeRepository) *handlerEp
 	return &handlerEpisode{EpisodeRepository}
 }
 
+func (h *handlerEpisode) FindEpisodesByMovie(c echo.Context) error {
+	movieID, _ := strconv.Atoi(c.Param("movieID"))
+	episodes, err := h.EpisodeRepository.FindEpisodesByMovie(movieID)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episodes})
+}
+
+func (h *handlerEpisode) GetEpisodeByMovie(c echo.Context) error {
+	movieID, _ := strconv.Atoi(c.Param("movieID"))
+	episodeID, _ := strconv.Atoi(c.Param("episodeID"))
+
+	episode, err := h.EpisodeRepository.GetEpisodeByMovie(movieID, episodeID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episode})
+}
+
 func (h *handlerEpisode) FindEpisodes(c echo.Context) error {
 	episodes, err := h.EpisodeRepository.FindEpisodes()
 
@@ -70,7 +93,7 @@ func (h *handlerEpisode) CreateEpisode(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponseEpisode(data)})
 }
 
-func (h *handlerEpisode) UpdateMovie(c echo.Context) error {
+func (h *handlerEpisode) UpdateEpisode(c echo.Context) error {
 	request := new(episodeDto.UpdateEpisodeRequest)
 
 	if err := c.Bind(&request); err != nil {
