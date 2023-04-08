@@ -8,4 +8,5 @@ func RouteInit(e *echo.Group) {
 	CategoryRoutes(e)
 	TransactionRoutes(e)
 	EpisodeRoutes(e)
+	AuthRoutes(e)
 }
