@@ -5,6 +5,7 @@ import (
 	dto "dumbflix/dto/result"
 	"dumbflix/models"
 	"dumbflix/repositories"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,6 +29,10 @@ func (h *handlerEpisode) FindEpisodesByMovie(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
+	for i, m := range episodes {
+		episodes[i].Thumbnail = path_file + m.Thumbnail
+	}
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episodes})
 }
 
@@ -40,17 +45,9 @@ func (h *handlerEpisode) GetEpisodeByMovie(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
+	episode.Thumbnail = path_file + episode.Thumbnail
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episode})
-}
-
-func (h *handlerEpisode) FindEpisodes(c echo.Context) error {
-	episodes, err := h.EpisodeRepository.FindEpisodes()
-
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episodes})
 }
 
 func (h *handlerEpisode) GetEpisode(c echo.Context) error {
@@ -62,13 +59,21 @@ func (h *handlerEpisode) GetEpisode(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
+	episode.Thumbnail = path_file + episode.Thumbnail
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: episode})
 }
 
 func (h *handlerEpisode) CreateEpisode(c echo.Context) error {
-	request := new(episodeDto.CreateEpisodeRequest)
-	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	dataFile := c.Get("dataFile").(string)
+	fmt.Println("this is data file", dataFile)
+
+	movieID, _ := strconv.Atoi(c.Param("movie_id"))
+	request := episodeDto.CreateEpisodeRequest{
+		Title:     c.FormValue("title"),
+		Thumbnail: dataFile,
+		VideoLink: c.FormValue("video_link"),
+		MovieID:   movieID,
 	}
 
 	validation := validator.New()

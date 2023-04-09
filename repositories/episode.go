@@ -9,7 +9,6 @@ import (
 type EpisodeRepository interface {
 	FindEpisodesByMovie(MovieID int) ([]models.Episode, error)
 	GetEpisodeByMovie(MovieID int, EpsodeID int) (models.Episode, error)
-	FindEpisodes() ([]models.Episode, error)
 	GetEpisode(ID int) (models.Episode, error)
 	CreateEpisode(Episode models.Episode) (models.Episode, error)
 	UpdateEpisode(Episode models.Episode) (models.Episode, error)
@@ -32,13 +31,6 @@ func (r *repository) GetEpisodeByMovie(movieID int, episodeID int) (models.Episo
 	err := r.db.Preload("Movie").Where("movie_id = ? AND episode_id = ?", movieID, episodeID).First(&episode).Error
 
 	return episode, err
-}
-
-func (r *repository) FindEpisodes() ([]models.Episode, error) {
-	var episodes []models.Episode
-	err := r.db.Preload("Movie").Find(&episodes).Error
-
-	return episodes, err
 }
 
 func (r *repository) GetEpisode(ID int) (models.Episode, error) {
