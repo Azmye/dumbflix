@@ -5,6 +5,7 @@ import (
 	dto "dumbflix/dto/result"
 	"dumbflix/models"
 	"dumbflix/repositories"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -20,11 +21,17 @@ func HandlerMovie(MovieRepository repositories.MovieRepository) *handlerMovie {
 	return &handlerMovie{MovieRepository}
 }
 
+var path_file = "http://localhost:5000/uploads/"
+
 func (h *handlerMovie) FindMovies(c echo.Context) error {
 	movies, err := h.MovieRepository.FindMovies()
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	for i, m := range movies {
+		movies[i].Thumbnail = path_file + m.Thumbnail
 	}
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: movies})
@@ -39,13 +46,23 @@ func (h *handlerMovie) GetMovie(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
+	movie.Thumbnail = path_file + movie.Thumbnail
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: movie})
 }
 
 func (h *handlerMovie) CreateMovie(c echo.Context) error {
-	request := new(moviesDto.CreateMovieRequest)
-	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	dataFile := c.Get("dataFile").(string)
+	fmt.Println("this is data file", dataFile)
+
+	categoryID, _ := strconv.Atoi(c.FormValue("category_id"))
+
+	request := moviesDto.CreateMovieRequest{
+		Title:       c.FormValue("title"),
+		Thumbnail:   dataFile,
+		Year:        c.FormValue("year"),
+		CategoryID:  categoryID,
+		Description: c.FormValue("description"),
 	}
 
 	validation := validator.New()
@@ -72,10 +89,17 @@ func (h *handlerMovie) CreateMovie(c echo.Context) error {
 }
 
 func (h *handlerMovie) UpdateMovie(c echo.Context) error {
-	request := new(moviesDto.UpdateMovieRequest)
+	dataFile := c.Get("dataFile").(string)
+	fmt.Println("this is data file", dataFile)
 
-	if err := c.Bind(&request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	categoryID, _ := strconv.Atoi(c.FormValue("category_id"))
+
+	request := moviesDto.CreateMovieRequest{
+		Title:       c.FormValue("title"),
+		Thumbnail:   dataFile,
+		Year:        c.FormValue("year"),
+		CategoryID:  categoryID,
+		Description: c.FormValue("description"),
 	}
 
 	id, _ := strconv.Atoi(c.Param("id"))
