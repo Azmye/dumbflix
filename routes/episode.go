@@ -16,7 +16,7 @@ func EpisodeRoutes(e *echo.Group) {
 
 	e.GET("/movie/:movieID/episodes", middleware.Auth(h.FindEpisodesByMovie))
 	e.GET("/movie/:movieID/episode/:id", middleware.Auth(h.GetEpisodeByMovie))
-	e.POST("/episode", middleware.Auth(h.CreateEpisode))
-	e.PATCH("/episode/:id", middleware.Auth(h.UpdateEpisode))
+	e.POST("/episode", middleware.Auth(middleware.UploadFile(h.CreateEpisode)))
+	e.PATCH("/episode/:id", middleware.Auth(middleware.UploadFile(h.UpdateEpisode)))
 	e.DELETE("/episode/:id", middleware.Auth(h.DeleteEpisode))
 }

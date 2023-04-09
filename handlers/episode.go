@@ -68,13 +68,16 @@ func (h *handlerEpisode) CreateEpisode(c echo.Context) error {
 	dataFile := c.Get("dataFile").(string)
 	fmt.Println("this is data file", dataFile)
 
-	movieID, _ := strconv.Atoi(c.Param("movie_id"))
+	movieID, _ := strconv.Atoi(c.FormValue("movie_id"))
+
 	request := episodeDto.CreateEpisodeRequest{
 		Title:     c.FormValue("title"),
 		Thumbnail: dataFile,
 		VideoLink: c.FormValue("video_link"),
 		MovieID:   movieID,
 	}
+
+	fmt.Println(request)
 
 	validation := validator.New()
 	err := validation.Struct(request)
