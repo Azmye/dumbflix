@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -53,10 +54,13 @@ func (h *handlerTransaction) CreateTransaction(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
+	userLogin := c.Get("userLogin")
+	userId := userLogin.(jwt.MapClaims)["id"].(float64)
+
 	transaction := models.Transaction{
 		StartDate: request.StartDate,
 		DueDate:   request.DueDate,
-		UserID:    request.UserID,
+		UserID:    int(userId),
 		Status:    request.Status,
 	}
 
@@ -65,6 +69,8 @@ func (h *handlerTransaction) CreateTransaction(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
+
+	transaction, _ = h.TransactionRepository.GetTransaction(transaction.ID)
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponseTransaction(data)})
 }

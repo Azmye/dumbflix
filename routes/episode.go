@@ -2,6 +2,7 @@ package routes
 
 import (
 	"dumbflix/handlers"
+	"dumbflix/pkg/middleware"
 	"dumbflix/pkg/mysql"
 	"dumbflix/repositories"
 
@@ -13,9 +14,9 @@ func EpisodeRoutes(e *echo.Group) {
 
 	h := handlers.HandlerEpisode(EpisodeRepository)
 
-	e.GET("/movie/:movieID/episodes", h.FindEpisodes)
-	e.GET("/movie/:movieID/episode/:id", h.GetEpisode)
-	e.POST("/episode", h.CreateEpisode)
-	e.PATCH("/episode/:id", h.UpdateEpisode)
-	e.DELETE("/episode/:id", h.DeleteEpisode)
+	e.GET("/movie/:movieID/episodes", middleware.Auth(h.FindEpisodes))
+	e.GET("/movie/:movieID/episode/:id", middleware.Auth(h.GetEpisode))
+	e.POST("/episode", middleware.Auth(h.CreateEpisode))
+	e.PATCH("/episode/:id", middleware.Auth(h.UpdateEpisode))
+	e.DELETE("/episode/:id", middleware.Auth(h.DeleteEpisode))
 }

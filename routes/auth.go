@@ -9,8 +9,9 @@ import (
 )
 
 func AuthRoutes(e *echo.Group) {
-	AuthRepository := repositories.RepositoryAuth(mysql.DB)
-	h := handlers.HandlerAuth(AuthRepository)
+	authRepository := repositories.RepositoryAuth(mysql.DB)
+	h := handlers.HandlerAuth(authRepository)
 
 	e.POST("/register", h.Register)
+	e.POST("/login", h.Login)
 }

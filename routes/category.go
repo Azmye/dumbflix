@@ -2,6 +2,7 @@ package routes
 
 import (
 	"dumbflix/handlers"
+	"dumbflix/pkg/middleware"
 	"dumbflix/pkg/mysql"
 	"dumbflix/repositories"
 
@@ -14,8 +15,8 @@ func CategoryRoutes(e *echo.Group) {
 	h := handlers.HandlerCategory(CategoryRepository)
 
 	e.GET("/category", h.FindCategory)
-	e.GET("/category/:id", h.GetCategory)
-	e.POST("/category", h.CreateCategory)
-	e.PATCH("/category/:id", h.UpdateCategory)
-	e.DELETE("/category/:id", h.DeleteCategory)
+	e.GET("/category/:id", middleware.Auth(h.GetCategory))
+	e.POST("/category", middleware.Auth(h.CreateCategory))
+	e.PATCH("/category/:id", middleware.Auth(h.UpdateCategory))
+	e.DELETE("/category/:id", middleware.Auth(h.DeleteCategory))
 }

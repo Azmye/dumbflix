@@ -5,10 +5,14 @@ import (
 	dto "dumbflix/dto/result"
 	"dumbflix/models"
 	"dumbflix/pkg/bcrypt"
+	jwtToken "dumbflix/pkg/jwt"
 	"dumbflix/repositories"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -53,4 +57,48 @@ func (h *handlerAuth) Register(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: data})
+}
+
+func (h *handlerAuth) Login(c echo.Context) error {
+	request := new(authdto.LoginRequest)
+	if err := c.Bind(request); err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	user := models.User{
+		Email:    request.Email,
+		Password: request.Password,
+	}
+
+	// checking user email
+	user, err := h.AuthRepository.Login(user.Email)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	// checking user password
+	isValid := bcrypt.CheckPasswordHash(request.Password, user.Password)
+	if !isValid {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	//generate token
+	claims := jwt.MapClaims{}
+	claims["id"] = user.ID
+	claims["exp"] = time.Now().Add(time.Hour * 3).Unix()
+
+	token, errGenerateToken := jwtToken.GenerateToken(&claims)
+	if errGenerateToken != nil {
+		log.Println(errGenerateToken)
+		return echo.NewHTTPError(http.StatusUnauthorized)
+	}
+
+	loginResponse := authdto.LoginResponse{
+		Fullname: user.Fullname,
+		Email:    user.Email,
+		Password: user.Password,
+		Token:    token,
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: loginResponse})
 }
