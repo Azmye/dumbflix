@@ -69,7 +69,6 @@ func (h *handlerCategory) CreateCategory(c echo.Context) error {
 
 func (h *handlerCategory) UpdateCategory(c echo.Context) error {
 	request := new(categoryDto.UpdateCategoryRequest)
-
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}

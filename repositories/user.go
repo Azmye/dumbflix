@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	FindUsers() ([]models.User, error)
 	GetUser(ID int) (models.User, error)
+	GetUserByEmail(Email string) (models.User, error)
 	DeleteUser(user models.User) (models.User, error)
 }
 
@@ -21,6 +22,13 @@ func (r *repository) FindUsers() ([]models.User, error) {
 	err := r.db.Find(&users).Error
 
 	return users, err
+}
+
+func (r *repository) GetUserByEmail(Email string) (models.User, error) {
+	var user models.User
+	err := r.db.First(&user, "email=?", Email).Error
+
+	return user, err
 }
 
 func (r *repository) GetUser(ID int) (models.User, error) {

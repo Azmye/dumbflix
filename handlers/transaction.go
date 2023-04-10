@@ -5,6 +5,7 @@ import (
 	transactionDto "dumbflix/dto/transaction"
 	"dumbflix/models"
 	"dumbflix/repositories"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -90,26 +91,22 @@ func (h *handlerTransaction) UpdateTransaction(c echo.Context) error {
 	}
 
 	if request.StartDate != 0 {
-		if _, err := strconv.Atoi(strconv.Itoa(request.StartDate)); err == nil {
-			transaction.StartDate = request.StartDate
-		}
+		transaction.StartDate = request.StartDate
 	}
 
 	if request.DueDate != 0 {
-		if _, err := strconv.Atoi(strconv.Itoa(request.DueDate)); err == nil {
-			transaction.DueDate = request.DueDate
-		}
+		transaction.DueDate = request.DueDate
 	}
 
 	if request.UserID != 0 {
-		if _, err := strconv.Atoi(strconv.Itoa(request.UserID)); err == nil {
-			transaction.UserID = request.UserID
-		}
+		transaction.UserID = request.UserID
 	}
 
 	if request.Status != "" {
 		transaction.Status = request.Status
 	}
+
+	fmt.Println(transaction)
 
 	data, err := h.TransactionRepository.UpdateTransaction(transaction)
 	if err != nil {

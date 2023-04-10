@@ -102,10 +102,16 @@ func (h *handlerEpisode) CreateEpisode(c echo.Context) error {
 }
 
 func (h *handlerEpisode) UpdateEpisode(c echo.Context) error {
-	request := new(episodeDto.UpdateEpisodeRequest)
+	dataFile := c.Get("dataFile").(string)
+	fmt.Println("this is data file", dataFile)
 
-	if err := c.Bind(&request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	movieID, _ := strconv.Atoi(c.FormValue("movie_id"))
+
+	request := episodeDto.UpdateEpisodeRequest{
+		Title:     c.FormValue("title"),
+		Thumbnail: dataFile,
+		VideoLink: c.FormValue("video_link"),
+		MovieID:   movieID,
 	}
 
 	id, _ := strconv.Atoi(c.Param("id"))

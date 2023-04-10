@@ -38,7 +38,17 @@ func (h *handler) GetUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(user)})
+}
 
+func (h *handler) GetUserByEmail(c echo.Context) error {
+	email := c.Param("email")
+
+	user, err := h.UserRepository.GetUserByEmail(email)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(user)})
 }
 
 func (h *handler) DeleteUser(c echo.Context) error {

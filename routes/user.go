@@ -14,5 +14,6 @@ func UserRoutes(e *echo.Group) {
 	h := handlers.HandlerUser(UserRepositroy)
 
 	e.GET("/users", h.FindUsers)
+	e.GET("/user/:email", h.GetUserByEmail)
 	e.DELETE("/user/:id", h.DeleteUser)
 }
