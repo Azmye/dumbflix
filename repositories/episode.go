@@ -28,7 +28,7 @@ func (r *repository) FindEpisodesByMovie(movieID int) ([]models.Episode, error) 
 
 func (r *repository) GetEpisodeByMovie(movieID int, episodeID int) (models.Episode, error) {
 	var episode models.Episode
-	err := r.db.Preload("Movie").Where("movie_id = ? AND episode_id = ?", movieID, episodeID).First(&episode).Error
+	err := r.db.Preload("Movie").Where("movie_id = ? AND id = ?", movieID, episodeID).First(&episode).Error
 
 	return episode, err
 }

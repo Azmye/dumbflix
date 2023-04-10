@@ -38,7 +38,7 @@ func (h *handlerEpisode) FindEpisodesByMovie(c echo.Context) error {
 
 func (h *handlerEpisode) GetEpisodeByMovie(c echo.Context) error {
 	movieID, _ := strconv.Atoi(c.Param("movieID"))
-	episodeID, _ := strconv.Atoi(c.Param("episodeID"))
+	episodeID, _ := strconv.Atoi(c.Param("id"))
 
 	episode, err := h.EpisodeRepository.GetEpisodeByMovie(movieID, episodeID)
 	if err != nil {
